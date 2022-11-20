@@ -1,0 +1,56 @@
+@import '/src/styles/variables/global.scss';
+
+.header {
+	height: $headerHeight;
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: flex;
+	align-items: flex-start;
+	z-index: 99999;
+	width: 100%;
+	background-color: $backgroundAccent;
+	border-bottom: thin solid $dividerColor;
+
+	.header-button {
+		color: $white;
+		min-height: $headerHeight;
+		border-radius: 0px;
+
+		.MuiSvgIcon-root {
+			color: white;
+		}
+
+		&:hover {
+			background-color: rgb(49, 49, 49);
+		}
+	}
+}
+
+.tab {
+	&.MuiTab-root {
+		color: $lightGray;
+		min-height: $headerHeight;
+
+		&.MuiTab-textColorPrimary {
+			color: $lightGray;
+		}
+
+		&.Mui-selected {
+			color: $white;
+		}
+	}
+}
+
+.tabs {
+	margin-left: 25px;
+
+	&.MuiTabs-root {
+		min-height: $headerHeight;
+		height: 44px;
+	}
+
+	.MuiTabs-indicator {
+		background-color: $white;
+	}
+}

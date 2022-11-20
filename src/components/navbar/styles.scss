@@ -1,0 +1,65 @@
+@import '/src/styles/variables/global.scss';
+
+.navbar {
+	width: 240px;
+	flex-shrink: 0;
+
+	.MuiDrawer-paper {
+		background-color: $backgroundAccent;
+		width: 240px;
+		color: $white;
+	}
+
+	.MuiToolbar-root {
+		min-height: 45px;
+		height: 45px;
+		padding: 0;
+	}
+	.MuiSvgIcon-root {
+		color: $white;
+	}
+}
+
+.select {
+	width: 100%;
+
+	.select-button {
+		display: flex;
+		color: $white;
+		min-height: $headerHeight;
+		height: $headerHeight;
+		border-radius: 0px;
+		padding: 0;
+		width: 100%;
+		justify-content: space-around;
+		font-weight: 400;
+
+		.select-title-container {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			text-transform: none;
+			color: $lightGray;
+		}
+
+		.select-title {
+			font-size: 14px;
+		}
+
+		.select-subtitle {
+			font-size: 10px;
+		}
+
+		.MuiSvgIcon-root {
+			color: $white;
+		}
+
+		&:hover {
+			background-color: rgb(49, 49, 49);
+		}
+	}
+}
+
+.divider {
+	background-color: $dividerColor;
+}

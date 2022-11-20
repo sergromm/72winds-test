@@ -1,0 +1,45 @@
+$backgroundAccent: #27272a;
+$backgroundColor: #202124;
+$white: #fff;
+$lightGray: #a1a1aa;
+$dividerColor: #414144;
+$headerHeight: 44px;
+
+body {
+	margin: 0;
+	background-color: $backgroundColor;
+	color: $white;
+	display: grid;
+}
+
+.main-view {
+	display: flex;
+	height: 100vh;
+	width: 100vw;
+	.toolbar {
+		min-height: 45px;
+		height: 45px;
+	}
+}
+
+.edit-input {
+	color: #71717a;
+	border-radius: 6px;
+
+	& input {
+		font-size: 14px;
+		padding: 10px;
+	}
+
+	& fieldset {
+		border-color: #71717a;
+	}
+
+	&:hover .MuiOutlinedInput-notchedOutline {
+		border-color: #71717a;
+	}
+
+	&:focus .MuiOutlinedInput-notchedOutline {
+		border-color: $white;
+	}
+}

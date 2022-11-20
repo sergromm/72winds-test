@@ -1,0 +1,31 @@
+.table-view {
+	width: 100%;
+}
+
+.project-view-title {
+	padding: 0 24px;
+	font-size: 1.125rem;
+}
+
+.section {
+	.toolbar {
+		height: 45px;
+		min-height: 45px;
+	}
+}
+
+.table-row {
+	.table-cell {
+		color: #a1a1aa;
+		padding: 0;
+		height: 44px;
+		text-align: left;
+		width: 200px;
+		&:first-of-type {
+			width: 110px;
+		}
+		&:nth-of-type(2) {
+			width: 757px;
+		}
+	}
+}
