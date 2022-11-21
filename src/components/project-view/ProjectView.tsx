@@ -8,13 +8,7 @@ export function ProjectView(props: IMainTableProps) {
 	return (
 		<Box component='section' className='table-view'>
 			<Toolbar className='toolbar' />
-			<Box
-				sx={{
-					display: 'flex',
-					minHeight: '45px',
-					alignItems: 'center',
-					backgroundColor: '#27272a',
-				}}>
+			<Box className='title-container'>
 				<Typography className='project-view-title'>
 					Строительно-монтажные работы
 				</Typography>

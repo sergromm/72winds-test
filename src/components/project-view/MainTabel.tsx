@@ -1,4 +1,9 @@
-import { useState } from 'react';
+import './styles.scss';
+import { useEffect, useState } from 'react';
+import { useSnapshot } from 'valtio';
+import FolderCopyIcon from '@mui/icons-material/FolderCopy';
+import DeleteIcon from '@mui/icons-material/Delete';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import {
 	Table,
 	TableBody,
@@ -8,23 +13,101 @@ import {
 	OutlinedInput,
 	Box,
 } from '@mui/material';
-import FolderCopyIcon from '@mui/icons-material/FolderCopy';
+import {
+	ValueCellProps,
+	RowProps,
+	RowData,
+	RowValues,
+	TableStore,
+} from './types';
+import { store } from './services';
+
+const API = {
+	testJSON: 'https://raw.githubusercontent.com/sergromm/raws/master/index.json',
+};
 
 function createData(
+	id: number,
 	name: string,
-	calories: number,
-	fat: number,
-	carbs: number,
-	protein: number,
+	basicSalary: number,
+	equipment: number,
+	overheads: number,
 	income: number,
 ) {
-	return { name, fat, carbs, protein, income };
+	return { id, name, basicSalary, equipment, overheads, income };
 }
 
-const rows = [createData('Южная строительная площадка', 0, 0, 0, 0, 0)];
+function ValueCell({ isEditMode, value }: ValueCellProps) {
+	return (
+		<TableCell sx={{ color: 'white', padding: 0 }} align='left'>
+			{isEditMode ? (
+				<OutlinedInput className='edit-input' defaultValue={value} />
+			) : (
+				value
+			)}
+		</TableCell>
+	);
+}
+
+function Row({ row }: RowProps) {
+	const [isEditMode, setIsEditMode] = useState(false);
+	const [isVisible, setIsVisible] = useState(false);
+	const { rows, add, remove } = useSnapshot<TableStore>(store);
+	return (
+		<TableRow
+			key={row.name}
+			sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+			<TableCell
+				onMouseEnter={() => setIsVisible(true)}
+				onMouseLeave={() => setIsVisible(false)}
+				sx={{ color: 'white', padding: 0 }}
+				component='th'
+				scope='row'>
+				<FolderCopyIcon
+					className={`icon ${isVisible ? 'active' : ''}`}
+					onClick={() => {
+						add(createData(rows.length, 'Фундаментальные работы', 0, 0, 0, 0));
+					}}
+				/>
+				<Box className={`icons-container ${isVisible ? 'active' : ''}`}>
+					<FolderCopyIcon />
+					<TextSnippetIcon />
+					<DeleteIcon onClick={() => remove(row.id)} />
+				</Box>
+			</TableCell>
+			<ValueCell isEditMode={isEditMode} value={row.name} />
+			<ValueCell isEditMode={isEditMode} value={row.basicSalary} />
+			<ValueCell isEditMode={isEditMode} value={row.equipment} />
+			<ValueCell isEditMode={isEditMode} value={row.overheads} />
+			<ValueCell isEditMode={isEditMode} value={row.income} />
+		</TableRow>
+	);
+}
+
+// const rows = [
+// 	createData('Южная строительная площадка', 0, 0, 0, 0),
+// 	createData('Фундаментальные работы', 0, 0, 0, 0),
+// ];
 
 export default function MainTabel() {
-	const [isEditMode, setIsEditMode] = useState(true);
+	const { rows } = useSnapshot<TableStore>(store);
+	const formatTableData = (data: RowData): RowValues => {
+		return {
+			id: data.id,
+			name: data.rowName,
+			basicSalary: data.salary,
+			equipment: data.equipmentCosts,
+			overheads: data.overheads,
+			income: data.estimatedProfit,
+		};
+	};
+	const onLoad = () => {
+		fetch(API.testJSON)
+			.then((res) => res.json())
+			.then((data) => (store.rows = data.map(formatTableData)));
+	};
+	useEffect(onLoad, []);
+
 	return (
 		<Box sx={{ padding: '0 10px' }}>
 			<Table
@@ -42,66 +125,7 @@ export default function MainTabel() {
 				</TableHead>
 				<TableBody>
 					{rows.map((row) => (
-						<TableRow
-							key={row.name}
-							sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-							<TableCell
-								sx={{ color: 'white', padding: 0 }}
-								component='th'
-								scope='row'>
-								<FolderCopyIcon onClick={() => setIsEditMode(!isEditMode)} />
-							</TableCell>
-							<TableCell sx={{ color: 'white', padding: 0 }} align='left'>
-								{isEditMode ? (
-									<OutlinedInput
-										className='edit-input'
-										defaultValue={row.name}
-									/>
-								) : (
-									row.name
-								)}
-							</TableCell>
-							<TableCell sx={{ color: 'white', padding: 0 }} align='left'>
-								{isEditMode ? (
-									<OutlinedInput
-										className='edit-input'
-										defaultValue={row.fat}
-									/>
-								) : (
-									row.fat
-								)}
-							</TableCell>
-							<TableCell sx={{ color: 'white', padding: 0 }} align='left'>
-								{isEditMode ? (
-									<OutlinedInput
-										className='edit-input'
-										defaultValue={row.carbs}
-									/>
-								) : (
-									row.carbs
-								)}
-							</TableCell>
-							<TableCell sx={{ color: 'white', padding: 0 }} align='left'>
-								{isEditMode ? (
-									<OutlinedInput
-										className='edit-input'
-										defaultValue={row.protein}
-									/>
-								) : (
-									row.protein
-								)}
-							</TableCell>
-							<TableCell sx={{ color: 'white', padding: 0 }} align='left'>
-								{isEditMode ? (
-									<OutlinedInput
-										className='edit-input'
-										defaultValue={row.income}
-									/>
-								) : (
-									row.income
-								)}
-							</TableCell>
-						</TableRow>
+						<Row row={row} />
 					))}
 				</TableBody>
 			</Table>
