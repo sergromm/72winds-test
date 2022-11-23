@@ -1,10 +1,7 @@
 import './styles.scss';
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import FolderCopyIcon from '@mui/icons-material/FolderCopy';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useQuery } from '@tanstack/react-query';
-import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import { ValueCellProps, RowData } from './types';
 import {
 	API,
@@ -14,6 +11,7 @@ import {
 	removeRowAtom,
 	addChildFolderAtom,
 	addChildFileAtom,
+	createRowsLookup,
 } from './services';
 import {
 	Table,
@@ -25,6 +23,11 @@ import {
 	Box,
 	CircularProgress,
 } from '@mui/material';
+
+import { ReactComponent as TrashIcon } from '../../assets/delete.svg';
+import { ReactComponent as Folder1 } from '../../assets/folder-level-1.svg';
+import { ReactComponent as Folder2 } from '../../assets/folder-level-2.svg';
+import { ReactComponent as File } from '../../assets/file.svg';
 
 function ValueCell({ isEditMode, value }: ValueCellProps) {
 	return (
@@ -52,6 +55,7 @@ function Row(props: RowProps) {
 		estimatedProfit,
 		child,
 		parentId,
+		level,
 	} = props;
 	const [isEditMode, setIsEditMode] = useState(false);
 	const [isVisible, setIsVisible] = useState(false);
@@ -64,25 +68,70 @@ function Row(props: RowProps) {
 		setIsEditMode(false);
 	}, []);
 
+	const rowIcon = (level: number) => {
+		switch (level) {
+			case 0:
+				return (
+					<button
+						onClick={() => addRow()}
+						className={`button main-button level-${level} ${
+							level > 0 ? 'child' : ''
+						}`}>
+						<Folder1 className='button-icon folder icon' />
+					</button>
+				);
+			case 1:
+				return (
+					<button
+						onClick={() => addChildFolder(parentId || id)}
+						className={`button main-button level-${level} ${
+							level > 0 ? 'child' : ''
+						}`}>
+						<Folder2 className='button-icon folder icon' />
+					</button>
+				);
+			case 2:
+				return (
+					<button
+						onClick={() => addChildFile(parentId || id)}
+						className={`button main-button level-${level} ${
+							level > 0 ? 'child' : ''
+						}`}>
+						<File className='button-icon file icon' />
+					</button>
+				);
+		}
+	};
 	return (
 		<>
 			<TableRow
 				key={id}
 				sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
 				<TableCell
-					onMouseEnter={() => setIsVisible(true)}
-					onMouseLeave={() => setIsVisible(false)}
 					sx={{ color: 'white', padding: 0 }}
+					className='buttons-cell'
 					component='th'
 					scope='row'>
-					<FolderCopyIcon
-						className={`icon ${isVisible ? 'active' : ''}`}
-						onClick={() => addRow()}
-					/>
-					<Box className={`icons-container ${isVisible ? 'active' : ''}`}>
-						<FolderCopyIcon onClick={() => addChildFolder(parentId || id)} />
-						<TextSnippetIcon onClick={() => addChildFile(parentId || id)} />
-						<DeleteIcon onClick={() => removeRow(id)} />
+					{rowIcon(level)}
+					<Box className={`buttons-container ${isVisible ? 'active' : ''}`}>
+						<button className='button'>
+							<Folder2
+								className='button-icon folder '
+								onClick={() => addChildFolder(parentId || id)}
+							/>
+						</button>
+						<button className='button'>
+							<File
+								className='button-icon file'
+								onClick={() => addChildFile(parentId || id)}
+							/>
+						</button>
+						<button className='button'>
+							<TrashIcon
+								className='button-icon delete'
+								onClick={() => removeRow(id)}
+							/>
+						</button>
 					</Box>
 				</TableCell>
 				<ValueCell isEditMode={isEditMode} value={rowName} />
@@ -128,6 +177,8 @@ export default function MainTabel() {
 		queryKey: ['rows'],
 		queryFn: () => API.getRows(rowsSet),
 	});
+
+	createRowsLookup(rows);
 
 	return (
 		<Box

@@ -17,4 +17,5 @@ export interface RowData {
 	salary: number;
 	supportCosts: number;
 	total: number;
+	level: number;
 }

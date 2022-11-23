@@ -1,4 +1,5 @@
 @import '../../styles/variables/global.scss';
+$levelMargin: 20px;
 
 .table-view {
 	width: 100%;
@@ -61,34 +62,131 @@
 		box-sizing: border-box;
 		border-color: $dividerColor;
 		position: relative;
+
 		.icon {
 			position: relative;
-			z-index: 2;
 		}
+
+		.button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 24px;
+			height: 24px;
+			padding: 0;
+			background-color: transparent;
+			border: none;
+			transition: 0.2s;
+			&:hover {
+				opacity: 0.8;
+			}
+			.button-icon {
+				&.folder {
+					width: 20px;
+					height: 16px;
+				}
+				&.file {
+					width: 16px;
+				}
+				&.delete {
+					height: 16px;
+					width: 13px;
+				}
+			}
+			&.child {
+				position: relative;
+				&::before {
+					content: '';
+					position: absolute;
+					top: -28px;
+					left: -8px;
+					width: 11px;
+					height: 38px;
+					border-color: $levelLineColor;
+					border-width: thin;
+					border-style: solid;
+					border-right: none;
+					border-top: none;
+				}
+			}
+			&.level-1 {
+				margin-left: $levelMargin;
+				// &::before {
+				// 	content: '';
+				// 	position: absolute;
+				// 	top: -28px;
+				// 	left: -8px;
+				// 	width: 11px;
+				// 	height: 38px;
+				// 	border-color: $levelLineColor;
+				// 	border-width: thin;
+				// 	border-style: solid;
+				// 	border-right: none;
+				// 	border-top: none;
+				// }
+			}
+
+			&.level-2 {
+				// position: relative;
+				margin-left: $levelMargin * 2;
+				// &::before {
+				// 	content: '';
+				// 	position: absolute;
+				// 	top: -28px;
+				// 	left: -8px;
+				// 	width: 11px;
+				// 	height: 38px;
+				// 	border-color: $levelLineColor;
+				// 	border-width: thin;
+				// 	border-style: solid;
+				// 	border-right: none;
+				// 	border-top: none;
+				// }
+			}
+		}
+
+		.main-button {
+			border-radius: 6px 0 0 6px;
+		}
+
 		.MuiSvgIcon-root {
 			width: 16px;
 			height: 16px;
 			padding: 6px 2px;
 			vertical-align: middle;
 		}
-		.icons-container {
+
+		.buttons-container {
 			display: flex;
+			align-items: center;
+			justify-content: space-between;
 			position: absolute;
 			z-index: 0;
+			// gap: 6px;
 			background-color: $dividerColor;
-			padding-left: 26px;
-			border-radius: 6px;
+			padding-left: 4px;
+			border-radius: 0 6px 6px 0;
 			top: 11px;
-			left: 8px;
+			left: 33px;
 			opacity: 0;
 			visibility: hidden;
-			width: 88px;
+			width: 66px;
 			box-sizing: border-box;
 			transition-duration: 0.18s;
+
 			&.active {
 				visibility: visible;
 				opacity: 1;
 			}
+		}
+
+		&:hover .buttons-container {
+			visibility: visible;
+			opacity: 1;
+		}
+		&:hover .button {
+			background-color: $dividerColor;
+			opacity: 1;
 		}
 	}
 }
