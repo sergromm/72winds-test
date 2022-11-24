@@ -82,23 +82,11 @@ const removeRecursively = (rows: RowData[], id: number) => {
 	}, [] as RowData[]);
 };
 
-const updateChild = (rows: RowData[], id: number, newChild: RowData[]) => {
-	return rows.map((row) => {
-		if (row.id === id) {
-			return {
-				...row,
-				child: newChild,
-			};
-		} else {
-			if (row.child) {
-				updateChild(row.child, id, newChild);
-			}
-			return row;
-		}
-	});
-};
-
-const updateRow = (rows: RowData[], id: number, newChild: RowData[]) => {
+const updateRowChildren = (
+	rows: RowData[],
+	id: number,
+	newChild: RowData[],
+) => {
 	let newRows = [];
 	for (const row of rows) {
 		if (row.id !== id) {
@@ -107,7 +95,7 @@ const updateRow = (rows: RowData[], id: number, newChild: RowData[]) => {
 			newRows.push({ ...row, child: newChild });
 		}
 		if (row.child) {
-			row.child = updateRow(row.child, id, newChild);
+			row.child = updateRowChildren(row.child, id, newChild);
 		}
 	}
 	return newRows;
@@ -164,7 +152,11 @@ export const addChildFolderAtom = atom(null, (get, set, parentId: number) => {
 				parent.level + 1,
 			),
 		);
-		const updatedRows = updateRow(get(rowsAtom), parentId, updatedChild);
+		const updatedRows = updateRowChildren(
+			get(rowsAtom),
+			parentId,
+			updatedChild,
+		);
 		set(rowsAtom, updatedRows);
 		console.log('updated:', get(rowsAtom));
 	}
@@ -177,9 +169,39 @@ export const addChildFileAtom = atom(null, (get, set, id: number) => {
 			row.child,
 			createData(Date.now(), 'Номенклатура', 0, 0, 0, 0, row.level + 1),
 		);
-		const updatedRow = updateRow(get(rowsAtom), id, updatedChild);
+		const updatedRow = updateRowChildren(get(rowsAtom), id, updatedChild);
 		set(rowsAtom, updatedRow);
 	}
+});
+
+type PickRowValues =
+	| 'id'
+	| 'rowName'
+	| 'salary'
+	| 'equipmentCosts'
+	| 'overheads'
+	| 'estimatedProfit';
+
+type RowValues = Pick<RowData, PickRowValues>;
+
+const updateRowValues = (rows: RowData[], id: number, newValues: RowValues) => {
+	return rows.map((row) => {
+		if (row.id === id) {
+			return {
+				...row,
+				...newValues,
+			};
+		}
+		if (row.child) {
+			row.child = updateRowValues(row.child, id, newValues);
+		}
+		return row;
+	});
+};
+
+export const updateRowArom = atom(null, (get, set, payload: RowValues) => {
+	const updatedRow = updateRowValues(get(rowsAtom), payload.id, payload);
+	set(rowsAtom, updatedRow);
 });
 
 export const removeRowAtom = atom(null, (get, set, id: number) => {
