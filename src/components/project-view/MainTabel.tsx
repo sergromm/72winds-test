@@ -2,6 +2,7 @@ import './styles.scss';
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import { useQuery } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ValueCellProps, RowData } from './types';
 import {
 	API,
@@ -29,9 +30,14 @@ import { ReactComponent as Folder1 } from '../../assets/folder-level-1.svg';
 import { ReactComponent as Folder2 } from '../../assets/folder-level-2.svg';
 import { ReactComponent as File } from '../../assets/file.svg';
 
-function ValueCell({ isEditMode, value }: ValueCellProps) {
+function ValueCell({ value }: ValueCellProps) {
+	const [isEditMode, setIsEditMode] = useState(false);
+
 	return (
-		<TableCell sx={{ color: 'white', padding: 0 }} align='left'>
+		<TableCell
+			onDoubleClick={() => setIsEditMode((prev) => !prev)}
+			sx={{ color: 'white', padding: 0 }}
+			align='left'>
 			{isEditMode ? (
 				<OutlinedInput className='edit-input' defaultValue={value} />
 			) : (
@@ -41,8 +47,58 @@ function ValueCell({ isEditMode, value }: ValueCellProps) {
 	);
 }
 
+function countChildren(children: RowData[], counter = 0): number {
+	children.forEach((child) => {
+		counter += 1;
+		if (child.child) {
+			counter = countChildren(child.child, counter);
+		}
+	});
+	return counter;
+}
+
+interface RowIconProps {
+	handleClick: () => void;
+	level: number;
+	height: number;
+	childrenCounter: number;
+	icon: JSX.Element;
+}
+
+function RowIcon(props: RowIconProps) {
+	const { handleClick, level, height, childrenCounter, icon } = props;
+	return (
+		<button
+			onClick={handleClick}
+			className={`button main-button level-${level} ${
+				level > 0 ? 'child' : ''
+			}`}>
+			{icon}
+			<div
+				style={{
+					width: '1px',
+					height: height + 'px',
+					borderLeft: 'thin solid #c6c6c6',
+					transform: 'translateY(100%)',
+					position: 'absolute',
+					bottom: '5px',
+					display: `${childrenCounter === 0 ? 'none' : 'block'}`,
+				}}
+			/>
+		</button>
+	);
+}
+
 interface RowProps extends RowData {
 	parentId?: number;
+}
+
+interface Handlers {
+	[key: number]: () => void;
+}
+
+interface Icons {
+	[key: number]: JSX.Element;
 }
 
 function Row(props: RowProps) {
@@ -57,51 +113,43 @@ function Row(props: RowProps) {
 		parentId,
 		level,
 	} = props;
-	const [isEditMode, setIsEditMode] = useState(false);
-	const [isVisible, setIsVisible] = useState(false);
+	const [childrenCounter, setChildrenCounter] = useState(0);
 	const [, addRow] = useAtom(addRowAtom);
 	const [, addChildFile] = useAtom(addChildFileAtom);
 	const [, addChildFolder] = useAtom(addChildFolderAtom);
 	const [, removeRow] = useAtom(removeRowAtom);
+	const levelLineLength = (counter: number) => 40 + 47 * (counter - 1);
 
-	useEffect(() => {
-		setIsEditMode(false);
-	}, []);
+	const icons: Icons = {
+		0: <Folder1 className='button-icon folder icon' />,
+		1: <Folder2 className='button-icon folder icon' />,
+		2: <File className='button-icon file icon' />,
+	};
 
-	const rowIcon = (level: number) => {
+	const handlers: Handlers = {
+		0: () => addRow(),
+		1: () => addChildFolder(parentId || id),
+		2: () => addChildFile(parentId || id),
+	};
+
+	const buttonContainerWidth = (level: number) => {
 		switch (level) {
 			case 0:
-				return (
-					<button
-						onClick={() => addRow()}
-						className={`button main-button level-${level} ${
-							level > 0 ? 'child' : ''
-						}`}>
-						<Folder1 className='button-icon folder icon' />
-					</button>
-				);
+				return '66px';
 			case 1:
-				return (
-					<button
-						onClick={() => addChildFolder(parentId || id)}
-						className={`button main-button level-${level} ${
-							level > 0 ? 'child' : ''
-						}`}>
-						<Folder2 className='button-icon folder icon' />
-					</button>
-				);
+				return '42px';
 			case 2:
-				return (
-					<button
-						onClick={() => addChildFile(parentId || id)}
-						className={`button main-button level-${level} ${
-							level > 0 ? 'child' : ''
-						}`}>
-						<File className='button-icon file icon' />
-					</button>
-				);
+				return '28px';
 		}
 	};
+
+	useEffect(() => {
+		const count = countChildren(child);
+		setChildrenCounter(child.length > 1 ? countChildren(child) : child.length);
+		console.log('length: ', rowName, childrenCounter);
+		console.log('count: ', rowName, count);
+	}, [child]);
+
 	return (
 		<>
 			<TableRow
@@ -112,18 +160,28 @@ function Row(props: RowProps) {
 					className='buttons-cell'
 					component='th'
 					scope='row'>
-					{rowIcon(level)}
-					<Box className={`buttons-container ${isVisible ? 'active' : ''}`}>
-						<button className='button'>
+					<RowIcon
+						level={level}
+						handleClick={handlers[level]}
+						icon={icons[level]}
+						height={levelLineLength(childrenCounter)}
+						childrenCounter={childrenCounter}
+					/>
+					<Box
+						className={`buttons-container level-${level}`}
+						style={{
+							width: buttonContainerWidth(level),
+						}}>
+						<button className={`button ${level > 0 ? 'hidden' : 'visible'}`}>
 							<Folder2
 								className='button-icon folder '
-								onClick={() => addChildFolder(parentId || id)}
+								onClick={() => addChildFolder(id)}
 							/>
 						</button>
-						<button className='button'>
+						<button className={`button ${level > 1 ? 'hidden' : 'visible'}`}>
 							<File
 								className='button-icon file'
-								onClick={() => addChildFile(parentId || id)}
+								onClick={() => addChildFile(id)}
 							/>
 						</button>
 						<button className='button'>
@@ -134,11 +192,11 @@ function Row(props: RowProps) {
 						</button>
 					</Box>
 				</TableCell>
-				<ValueCell isEditMode={isEditMode} value={rowName} />
-				<ValueCell isEditMode={isEditMode} value={salary} />
-				<ValueCell isEditMode={isEditMode} value={equipmentCosts} />
-				<ValueCell isEditMode={isEditMode} value={overheads} />
-				<ValueCell isEditMode={isEditMode} value={estimatedProfit} />
+				<ValueCell value={rowName} />
+				<ValueCell value={salary} />
+				<ValueCell value={equipmentCosts} />
+				<ValueCell value={overheads} />
+				<ValueCell value={estimatedProfit} />
 			</TableRow>
 			{child.map((row) => (
 				<Row parentId={id} key={row.id} {...row} />
@@ -179,7 +237,7 @@ export default function MainTabel() {
 	});
 
 	createRowsLookup(rows);
-
+	console.log(rows);
 	return (
 		<Box
 			display='flex'
@@ -200,6 +258,7 @@ export default function MainTabel() {
 					</TableBody>
 				</Table>
 			)}
+			<ReactQueryDevtools />
 		</Box>
 	);
 }

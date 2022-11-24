@@ -28,12 +28,11 @@ export function createData(
 	};
 }
 
-let level = 0;
-function addLevelsToRows(rows: RowData[]): RowData[] {
+function addLevelsToRows(rows: RowData[], level = 0): RowData[] {
 	return rows.map((row) => ({
 		...row,
-		level: level++,
-		child: row.child ? addLevelsToRows(row.child) : [],
+		level,
+		child: row.child ? addLevelsToRows(row.child, level + 1) : [],
 	}));
 }
 
@@ -63,7 +62,7 @@ export const API = {
 		fetch(API.testJSON)
 			.then((res) => res.json())
 			.then((data) => {
-				setter(data);
+				setter(addLevelsToRows(data));
 				return data;
 			}),
 };
@@ -99,11 +98,19 @@ const updateChild = (rows: RowData[], id: number, newChild: RowData[]) => {
 	});
 };
 
-const updateRowChildren = (rows: RowData[], id: number, newRow: RowData[]) => {
-	return rows.map((row) => ({
-		...row,
-		child: row.id === id ? newRow : row.child,
-	}));
+const updateRow = (rows: RowData[], id: number, newChild: RowData[]) => {
+	let newRows = [];
+	for (const row of rows) {
+		if (row.id !== id) {
+			newRows.push(row);
+		} else if (row.id === id) {
+			newRows.push({ ...row, child: newChild });
+		}
+		if (row.child) {
+			row.child = updateRow(row.child, id, newChild);
+		}
+	}
+	return newRows;
 };
 
 export const rowsAtom = atom<RowData[]>([]);
@@ -145,40 +152,33 @@ const findParentRow = (rows: RowData[], id: number): RowData | null => {
 export const addChildFolderAtom = atom(null, (get, set, parentId: number) => {
 	const parent = findParentRow(get(rowsAtom), parentId);
 	if (parent) {
-		const updatedRows = updateRowChildren(
-			get(rowsAtom),
-			parentId,
-			addRow(
-				parent.child,
-				createData(
-					Date.now(),
-					'Западная строительная площадка',
-					0,
-					0,
-					0,
-					0,
-					parent.level,
-				),
+		const updatedChild = addRow(
+			parent.child,
+			createData(
+				Date.now(),
+				'Западная строительная площадка',
+				0,
+				0,
+				0,
+				0,
+				parent.level + 1,
 			),
 		);
+		const updatedRows = updateRow(get(rowsAtom), parentId, updatedChild);
 		set(rowsAtom, updatedRows);
 		console.log('updated:', get(rowsAtom));
 	}
 });
 
-export const addChildFileAtom = atom(null, (get, set, parentId: number) => {
-	const parent = rowsLookup.get(parentId);
-	console.log(parent);
-	if (parent) {
-		const updatedRow = addRow(
-			parent.child,
-			createData(Date.now(), 'Номенклатура', 0, 0, 0, 0, parent.level),
+export const addChildFileAtom = atom(null, (get, set, id: number) => {
+	const row = rowsLookup.get(id);
+	if (row) {
+		const updatedChild = addRow(
+			row.child,
+			createData(Date.now(), 'Номенклатура', 0, 0, 0, 0, row.level + 1),
 		);
-		const updatedParent = updateChild(get(rowsAtom), parentId, updatedRow);
-		console.log(updatedParent);
-		console.log(updatedRow);
-
-		set(rowsAtom, updatedParent);
+		const updatedRow = updateRow(get(rowsAtom), id, updatedChild);
+		set(rowsAtom, updatedRow);
 	}
 });
 

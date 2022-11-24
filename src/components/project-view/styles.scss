@@ -67,6 +67,14 @@ $levelMargin: 20px;
 			position: relative;
 		}
 
+		.level-1 {
+			margin-left: $levelMargin;
+		}
+
+		.level-2 {
+			margin-left: $levelMargin * 2;
+		}
+
 		.button {
 			display: flex;
 			align-items: center;
@@ -80,6 +88,15 @@ $levelMargin: 20px;
 			&:hover {
 				opacity: 0.8;
 			}
+
+			&.visible {
+				display: flex;
+			}
+
+			&.hidden {
+				display: none;
+			}
+
 			.button-icon {
 				&.folder {
 					width: 20px;
@@ -93,15 +110,15 @@ $levelMargin: 20px;
 					width: 13px;
 				}
 			}
+
 			&.child {
 				position: relative;
 				&::before {
 					content: '';
 					position: absolute;
-					top: -28px;
+					top: 11px;
 					left: -8px;
 					width: 11px;
-					height: 38px;
 					border-color: $levelLineColor;
 					border-width: thin;
 					border-style: solid;
@@ -109,44 +126,23 @@ $levelMargin: 20px;
 					border-top: none;
 				}
 			}
-			&.level-1 {
-				margin-left: $levelMargin;
-				// &::before {
-				// 	content: '';
-				// 	position: absolute;
-				// 	top: -28px;
-				// 	left: -8px;
-				// 	width: 11px;
-				// 	height: 38px;
-				// 	border-color: $levelLineColor;
-				// 	border-width: thin;
-				// 	border-style: solid;
-				// 	border-right: none;
-				// 	border-top: none;
-				// }
-			}
-
-			&.level-2 {
-				// position: relative;
-				margin-left: $levelMargin * 2;
-				// &::before {
-				// 	content: '';
-				// 	position: absolute;
-				// 	top: -28px;
-				// 	left: -8px;
-				// 	width: 11px;
-				// 	height: 38px;
-				// 	border-color: $levelLineColor;
-				// 	border-width: thin;
-				// 	border-style: solid;
-				// 	border-right: none;
-				// 	border-top: none;
-				// }
-			}
 		}
 
 		.main-button {
 			border-radius: 6px 0 0 6px;
+			position: relative;
+			// &::after {
+			// 	content: '';
+			// 	position: absolute;
+			// 	bottom: -34px;
+			// 	left: 12px;
+			// 	height: 38px;
+			// 	border-color: $levelLineColor;
+			// 	border-width: thin;
+			// 	border-style: solid;
+			// 	border-right: none;
+			// 	border-top: none;
+			// }
 		}
 
 		.MuiSvgIcon-root {
@@ -162,7 +158,6 @@ $levelMargin: 20px;
 			justify-content: space-between;
 			position: absolute;
 			z-index: 0;
-			// gap: 6px;
 			background-color: $dividerColor;
 			padding-left: 4px;
 			border-radius: 0 6px 6px 0;

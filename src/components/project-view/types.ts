@@ -1,5 +1,4 @@
 export interface ValueCellProps {
-	isEditMode: boolean;
 	value: number | string;
 }
 

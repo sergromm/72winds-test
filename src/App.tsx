@@ -4,23 +4,33 @@ import ProjectView from './components/project-view';
 import Header from './components/header';
 import Navbar from './components/navbar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Provider as JotaiProvider } from 'jotai';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			refetchOnWindowFocus: false,
+			refetchInterval: false,
+		},
+	},
+});
 
 export default function App() {
 	return (
 		<QueryClientProvider client={queryClient}>
-			<Grid container>
-				<Grid item>
-					<Header />
+			<JotaiProvider>
+				<Grid container>
+					<Grid item>
+						<Header />
+					</Grid>
+					<Grid item>
+						<Box component='main' className='main-view'>
+							<Navbar />
+							<ProjectView />
+						</Box>
+					</Grid>
 				</Grid>
-				<Grid item>
-					<Box component='main' className='main-view'>
-						<Navbar />
-						<ProjectView />
-					</Box>
-				</Grid>
-			</Grid>
+			</JotaiProvider>
 		</QueryClientProvider>
 	);
 }
