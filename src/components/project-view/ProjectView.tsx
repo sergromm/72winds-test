@@ -1,6 +1,6 @@
 import './styles.scss';
 import { Box, Divider, Toolbar, Typography } from '@mui/material';
-import MainTabel from './MainTabel';
+import MainTable from './main-table';
 
 export interface IMainTableProps {}
 
@@ -14,8 +14,7 @@ export function ProjectView(props: IMainTableProps) {
 				</Typography>
 				<Divider className='divider' orientation='vertical' flexItem />
 			</Box>
-			<Divider className='divider' />
-			<MainTabel />
+			<MainTable />
 		</Box>
 	);
 }

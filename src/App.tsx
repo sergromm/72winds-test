@@ -23,7 +23,7 @@ export default function App() {
 					<Grid item>
 						<Header />
 					</Grid>
-					<Grid item>
+					<Grid className='page-container' item>
 						<Box component='main' className='main-view'>
 							<Navbar />
 							<ProjectView />

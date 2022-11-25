@@ -8,6 +8,15 @@
 		background-color: $backgroundAccent;
 		width: 240px;
 		color: $white;
+		border-right: thin solid $dividerColor;
+	}
+
+	.MuiList-root {
+		padding: 0;
+	}
+
+	.MuiButtonBase-root {
+		padding: 0px 20px;
 	}
 
 	.MuiToolbar-root {

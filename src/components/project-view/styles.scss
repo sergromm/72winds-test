@@ -3,7 +3,16 @@ $levelMargin: 20px;
 
 .table-view {
 	width: 100%;
+}
+
+.table-container {
+	display: flex;
+	align-content: center;
+	justify-content: center;
+	padding: 0 10px;
 	background-color: $backgroundColor;
+	place-items: center;
+	position: relative;
 }
 
 .title-container {
@@ -11,6 +20,11 @@ $levelMargin: 20px;
 	min-height: 45px;
 	align-items: center;
 	background-color: #27272a;
+	position: sticky;
+	top: 45px;
+	z-index: 999;
+	right: 0;
+	border-bottom: thin solid #414144;
 }
 
 .project-view-title {
@@ -18,7 +32,12 @@ $levelMargin: 20px;
 	font-size: 18px;
 }
 
-.table-row {
+.table-header {
+	position: sticky;
+	top: 91px;
+	background-color: $backgroundColor;
+	z-index: 2;
+	right: 0;
 	.table-cell {
 		color: #a1a1aa;
 		padding: 0;
@@ -34,25 +53,15 @@ $levelMargin: 20px;
 	}
 }
 
-.edit-input {
-	color: #71717a;
-	border-radius: 6px;
-
-	& input {
-		font-size: 14px;
-		padding: 10px;
+.table-body-row {
+	height: 60px;
+	&:last-child td,
+	&:last-child th {
+		border: 0;
 	}
-
-	& fieldset {
-		border-color: #71717a;
-	}
-
-	&:hover .MuiOutlinedInput-notchedOutline {
-		border-color: #71717a;
-	}
-
-	&:focus .MuiOutlinedInput-notchedOutline {
-		border-color: $white;
+	.buttons-cell {
+		color: 'white';
+		padding: 0;
 	}
 }
 
@@ -131,18 +140,6 @@ $levelMargin: 20px;
 		.main-button {
 			border-radius: 6px 0 0 6px;
 			position: relative;
-			// &::after {
-			// 	content: '';
-			// 	position: absolute;
-			// 	bottom: -34px;
-			// 	left: 12px;
-			// 	height: 38px;
-			// 	border-color: $levelLineColor;
-			// 	border-width: thin;
-			// 	border-style: solid;
-			// 	border-right: none;
-			// 	border-top: none;
-			// }
 		}
 
 		.MuiSvgIcon-root {
@@ -150,6 +147,17 @@ $levelMargin: 20px;
 			height: 16px;
 			padding: 6px 2px;
 			vertical-align: middle;
+		}
+
+		.edit-input {
+			color: #71717a;
+			border-radius: 6px;
+			height: 37px;
+			font-size: 14px;
+
+			& fieldset {
+				border-color: #71717a;
+			}
 		}
 
 		.buttons-container {
@@ -161,7 +169,7 @@ $levelMargin: 20px;
 			background-color: $dividerColor;
 			padding-left: 4px;
 			border-radius: 0 6px 6px 0;
-			top: 11px;
+			top: 18px;
 			left: 33px;
 			opacity: 0;
 			visibility: hidden;
