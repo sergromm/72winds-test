@@ -13,6 +13,24 @@ import {
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import Select from './Select';
 
+const navbarItem = [
+	'По проекту',
+	'Объекты',
+	'РД',
+	'МТО',
+	'СМР',
+	'График',
+	'МиМ',
+	'Рабочие',
+	'Капвложения',
+	'Бюджет',
+	'Финансирование',
+	'Панорамы',
+	'Камеры',
+	'Поручения',
+	'Контрагенты',
+];
+
 export interface INavbarProps {}
 export function Navbar(props: INavbarProps) {
 	return (
@@ -24,7 +42,7 @@ export function Navbar(props: INavbarProps) {
 			<Divider className='divider' />
 			<Box component='nav' sx={{ overflow: 'auto' }}>
 				<List>
-					{['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+					{navbarItem.map((text, index) => (
 						<ListItem key={text} disablePadding>
 							<ListItemButton>
 								<ListItemIcon>

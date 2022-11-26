@@ -17,6 +17,10 @@
 
 	.MuiButtonBase-root {
 		padding: 0px 20px;
+		height: 32px;
+		.MuiTypography-root {
+			font-size: 14px;
+		}
 	}
 
 	.MuiToolbar-root {
