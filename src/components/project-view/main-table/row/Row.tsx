@@ -8,17 +8,14 @@ import { ReactComponent as File } from '../../../../assets/file.svg';
 import { TableRow, TableCell, Box } from '@mui/material';
 import { countChildren, levelLineLength } from '../utils';
 import {
-	addChildFileAtom,
-	addChildFolderAtom,
+	addChildRowAtom,
 	addRowAtom,
 	API,
-	createData,
 	removeRowAtom,
 	updateRowAtom,
 } from '../../services';
 import RowIcon from './RowIcon';
 import ValueCell from './ValueCell';
-import { useMutation } from '@tanstack/react-query';
 
 const buttonContainerWidth: LevelContent<string> = {
 	0: '66px',
@@ -54,29 +51,16 @@ const initialRowValues = {
 };
 
 export default function Row(props: RowProps) {
-	const { id, child, parentId, level, passedParentId } = props;
+	const { id, child, parentId, level, passedParentId, ...rest } = props;
 
 	const [childrenCounter, setChildrenCounter] = useState(0);
 	const [isEditMode, setIsEditMode] = useState(false);
-	const [rowValues, setRowValues] = useState(initialRowValues);
+	const [rowValues, setRowValues] = useState(rest);
 
 	const [, addRow] = useAtom(addRowAtom);
-	const [, addChildFile] = useAtom(addChildFileAtom);
-	const [, addChildFolder] = useAtom(addChildFolderAtom);
+	const [, addChildRow] = useAtom(addChildRowAtom);
 	const [, removeRow] = useAtom(removeRowAtom);
 	const [, updateRow] = useAtom(updateRowAtom);
-
-	// const createRow = useMutation({
-	// 	mutationFn: API.createRow,
-	// });
-
-	// const updateRowValues = useMutation({
-	// 	mutationFn: API.updateRow,
-	// });
-
-	// const deleteRow = useMutation({
-	// 	mutationFn: API.deleteRow,
-	// });
 
 	function handleInputChange(e: ChangeEvent) {
 		const { name, value } = e.target as HTMLInputElement;
@@ -88,17 +72,15 @@ export default function Row(props: RowProps) {
 
 	function handleSubmit(e: KeyboardEvent) {
 		if (e.key === 'Enter') {
-			if (!(rowValues === initialRowValues)) {
-				updateRow({ ...rowValues, id });
+			updateRow({ ...rowValues, id });
 
-				API.updateRow({
-					data: rowValues,
-					setter: updateRow,
-					id,
-				});
+			API.updateRow({
+				data: rowValues,
+				setter: updateRow,
+				id,
+			});
 
-				setIsEditMode(false);
-			}
+			setIsEditMode(false);
 		}
 	}
 
@@ -108,10 +90,9 @@ export default function Row(props: RowProps) {
 		}
 	}
 
+	// TODO: привести добавление к одной функции addNewRow
+
 	function handleAddParentFolder() {
-		// console.dir({ id, parentId, passedParentId });
-		// console.log(passedParentId || id);
-		// addChildFolder(passedParentId || id);
 		addRow({
 			rowName: 'Новая строка',
 			equipmentCosts: 0,
@@ -123,33 +104,26 @@ export default function Row(props: RowProps) {
 
 		API.createRow({ ...initialRowValues, parentId: null });
 	}
+	// TODO: привести добавление к одной функции addNewRow
 
-	function handleAddChildFolder(rowId: number = passedParentId) {
+	function handleAddChildRow(rowId: number = passedParentId) {
 		console.dir({ id, parentId, passedParentId });
-		addChildFolder(passedParentId || id);
+		addChildRow(rowId);
 		API.createRow({
 			parentId: rowId,
 			...rowValues,
-			rowName: 'Новая папка',
+			rowName: 'Новая строка',
 		});
 	}
 
-	function handleAddChildFile(rowId: number = passedParentId) {
-		console.dir({ id, parentId, passedParentId });
-		// console.log(passedParentId || id);
-		addChildFile(passedParentId);
-		// console.log(passedParentId, id);
-		API.createRow({
-			parentId: rowId,
-			...rowValues,
-			rowName: 'Новый файл',
-		});
+	function handleDoubleClick() {
+		setIsEditMode((prev) => !prev);
 	}
 
 	const handlers: LevelContent<() => void> = {
 		0: () => withEditMode(handleAddParentFolder),
-		1: () => withEditMode(handleAddChildFolder),
-		2: () => withEditMode(handleAddChildFile),
+		1: () => withEditMode(handleAddChildRow),
+		2: () => withEditMode(handleAddChildRow),
 	};
 
 	useEffect(() => {
@@ -158,13 +132,7 @@ export default function Row(props: RowProps) {
 
 	return (
 		<>
-			<TableRow
-				key={id}
-				onDoubleClick={() => {
-					console.log(id);
-					setIsEditMode((prev) => !prev);
-				}}
-				className='table-body-row'>
+			<TableRow key={id} className='table-body-row'>
 				<TableCell className='buttons-cell' component='th' scope='row'>
 					<RowIcon
 						level={level}
@@ -180,13 +148,13 @@ export default function Row(props: RowProps) {
 							width: buttonContainerWidth[level],
 						}}>
 						<button
-							onClick={() => handleAddChildFolder(id)}
+							onClick={() => handleAddChildRow(id)}
 							className={`button ${level > 0 ? 'hidden' : 'visible'}`}>
 							<Folder2 className='button-icon folder ' />
 						</button>
 
 						<button
-							onClick={() => handleAddChildFile(id)}
+							onClick={() => handleAddChildRow(id)}
 							className={`button ${level > 1 ? 'hidden' : 'visible'}`}>
 							<File className='button-icon file' />
 						</button>
@@ -204,10 +172,12 @@ export default function Row(props: RowProps) {
 
 				{cells.map(({ name }) => (
 					<ValueCell
+						id={id}
 						key={name}
 						isEditMode={isEditMode}
 						handleSubmit={handleSubmit}
 						handleChange={handleInputChange}
+						handleDoubleClick={handleDoubleClick}
 						value={props[name]}
 						name={name}
 					/>

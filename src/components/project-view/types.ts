@@ -1,11 +1,13 @@
 import { ChangeEvent, KeyboardEvent, MouseEvent } from 'react';
 
 export interface ValueCellProps {
-	value: number | string;
-	isEditMode: boolean;
 	name: string;
-	handleChange: (e: ChangeEvent) => void;
-	handleSubmit: (e: KeyboardEvent) => void;
+	isEditMode: boolean;
+	value: number | string;
+	id: number;
+	handleDoubleClick?: () => void;
+	handleChange?: (e: ChangeEvent) => void;
+	handleSubmit?: (e: KeyboardEvent) => void;
 }
 
 export interface RowData {

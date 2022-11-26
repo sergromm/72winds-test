@@ -6,18 +6,22 @@ export default function ValueCell({
 	value,
 	handleChange,
 	handleSubmit,
-	name,
 	isEditMode,
-}: ValueCellProps) {
-	const [val, setValue] = useState(value);
-
+	handleDoubleClick,
+	name,
+}: // handleDoubleClick,
+ValueCellProps) {
 	return (
-		<TableCell sx={{ color: 'white', padding: 0 }} align='left'>
+		<TableCell
+			onDoubleClick={handleDoubleClick}
+			// onKeyDown={}
+			sx={{ color: 'white', padding: 0 }}
+			align='left'>
 			{isEditMode ? (
 				<OutlinedInput
 					error={value === ''}
 					className='edit-input'
-					defaultValue={val}
+					defaultValue={value}
 					onChange={handleChange}
 					onKeyDown={handleSubmit}
 					name={name}

@@ -206,37 +206,9 @@ const findParentRow = (rows: RowData[], id: number): RowData | null => {
 	return null;
 };
 
-export const addChildFolderAtom = atom(null, (get, set, parentId: number) => {
-	const parent = findParentRow(get(rowsAtom), parentId);
-	console.log(parent, parentId);
-	if (parent) {
-		const updatedChild = addRow(
-			parent.child,
-			createData({
-				id: Date.now(),
-				parentId: parent.id,
-				rowName: 'Западная строительная площадка',
-				equipmentCosts: 0,
-				estimatedProfit: 0,
-				overheads: 0,
-				salary: 0,
-				level: parent.level + 1,
-			}),
-		);
-
-		const updatedRows = updateRowChildren(
-			get(rowsAtom),
-			parentId,
-			updatedChild,
-		);
-
-		set(rowsAtom, updatedRows);
-	}
-});
-
-export const addChildFileAtom = atom(null, (get, set, id: number) => {
+export const addChildRowAtom = atom(null, (get, set, id: number) => {
 	const row = findParentRow(get(rowsAtom), id);
-	console.log(row);
+
 	if (row) {
 		const updatedChild = addRow(
 			row.child,
@@ -248,9 +220,10 @@ export const addChildFileAtom = atom(null, (get, set, id: number) => {
 				estimatedProfit: 0,
 				overheads: 0,
 				salary: 0,
-				level: 2,
+				level: row.level + 1,
 			}),
 		);
+
 		const updatedRow = updateRowChildren(get(rowsAtom), id, updatedChild);
 		set(rowsAtom, updatedRow);
 	}
