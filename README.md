@@ -1,9 +1,5 @@
 <h1 align="center">Тестовое задание для 7winds</h1> <br>
 
-<p align="center">
- выполнил Роман Сергичев
-</p>
-
 - [Vercel deploy][vercel] (не работает из-за Mixed Content)
 
 ## Запуск проекта локально:
