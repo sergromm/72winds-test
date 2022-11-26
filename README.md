@@ -4,7 +4,7 @@
  выполнил Роман Сергичев
 </p>
 
-- [Vercel deploy][vercel]
+- [Vercel deploy][vercel] (не работает из-за Mixed Content)
 
 ## Запуск проекта локально:
 
